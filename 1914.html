@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1914</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            width: 100%;
+            height: 800px;
+        }
+    </style>
+</head>
+<body>
+    <h1>1914</h1>
+    <a href="index.html">1824</a>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Initialize the map and set its view to a specific location and zoom level
+        const map = L.map('map').setView([51.505, -0.09], 3);
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Load GeoJSON data from the provided URL
+        const geoJsonUrl = "https://raw.githubusercontent.com/csae8092/histogis-data-fun/refs/heads/main/1914-12-05.json";
+        
+        fetch(geoJsonUrl)
+            .then(response => response.json())
+            .then(data => {
+                // Add the GeoJSON layer to the map
+                L.geoJSON(data, {
+                    onEachFeature: (feature, layer) => {
+                        if (feature.properties) {
+                            layer.bindPopup(`<strong>${feature.properties.name || "No Name"}</strong>`);
+                        }
+                    },
+                    style: feature => ({
+                        color: feature.properties && feature.properties.color ? feature.properties.color : "#3388ff"
+                    })
+                }).addTo(map);
+            })
+            .catch(error => console.error("Error loading GeoJSON:", error));
+    </script>
+</body>
+</html>
